@@ -1,0 +1,90 @@
+* appendorgheading
+
+This script appends [[https://orgmode.org][Org mode]] headings to any existing Org mode file
+which are plain text files with the extension =.org=.
+
+You can use this script to generate arbitrary Org mode headings. It's
+mainly a wrapper script for the function =orgformat()= of [[https://github.com/novoid/orgformat][orgformat]].
+
+** Why
+
+The author is using this script to log things to an =errors.org= file
+which is part of his Org mode agenda:
+
+: example_script.sh >out.log 2>&1 || \
+:          appendorgheading --output errors.org \
+:                           --filecontent out.log \
+:                           --level 2 \
+:                           --keyword "TODO"
+:                           --title "example_script: some error occurred" \
+:                           --daily
+
+When this =example_script.sh= returns an [[http://tldp.org/LDP/abs/html/exit-status.html][exit status]] which is not
+zero, =appendorgheading= is adding a new heading to the file
+=errors.org= at level 2 (two asterisks) with the title
+"example_script: some error occurred". 
+
+Using the =--daily= parameter, there is a time-stamp attached which
+re-occurs on a daily basis. This looks similar to
+=<2019-12-29 Sun 16:01 +1d>= which causes this entry to appear on
+every agenda so that it gets recognized and hopefully resolved. On
+resolving the issue, the author deletes (or achives) this heading.
+
+If these parameters are always the same, you can use the configuration
+file (see section below) to store the default values. Using this, you
+can reduce the example call above to:
+
+: example_script.sh >out.log 2>&1 || appendorgheading 
+
+The =errors.org= gets a new heading that looks like:
+
+: ** TODO example_script: some error occurred
+: 
+: #+BEGIN_EXAMPLE
+: <This is the content of 
+: the file out.log.>
+: #+END_EXAMPLE
+
+Of course, there are much more command line parameters to add tags,
+priorities, and other Org mode heading properties. See section
+"Usage" below.
+
+** Installation
+
+This tool needs [[http://www.python.org/downloads/][Python 3 to be installed]].
+
+You can install filetags either via [[https://packaging.python.org/tutorials/installing-packages/][pip]] which is the recommended way.
+Or you can install filetags using the source code, e.g., by cloning
+the [[https://github.com/novoid/filetags/][GitHub repository of filetags]].
+
+Install filetags via [[https://pip.pypa.io/en/stable/][pip]]: ~pip install appendorgheading~
+
+** Usage
+
+ # #+BEGIN_SRC sh :results output :wrap src
+ # ./appendorgheading/__init__.py --help | sed 'sX/home/vkX\$HOMEX'
+ # #+END_SRC
+
+** Configuration File
+
+** Changelog
+
+- 2019.12.29.1: first version on GitHub
+
+* How to Thank Me
+
+I'm glad you like my tools. If you want to support me:
+
+- Send old-fashioned *postcard* per snailmail - I love personal feedback!
+  - see [[http://tinyurl.com/j6w8hyo][my address]]
+- Send feature wishes or improvements as an issue on GitHub
+- Create issues on GitHub for bugs
+- Contribute merge requests for bug fixes
+- Check out my other cool [[https://github.com/novoid][projects on GitHub]]
+
+* Local Variables                                                  :noexport:
+# Local Variables:
+# mode: auto-fill
+# mode: flyspell
+# eval: (ispell-change-dictionary "en_US")
+# End:
