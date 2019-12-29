@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-30 00:19:30 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-30 00:48:49 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -34,14 +34,20 @@ CONFIG_FILE_NAME = '.appendorgheading'
 
 DESCRIPTION = "This tool appends Org mode formatted headings to existing Org mode files.\n\
 \n\
-The author is using this to log events to some kind of 'errors.org' which is part\n\
-of his Org mode agenda.\n\
-\n\
 The optional configuration file \"" + CONFIG_FILE_NAME + "\" can be placed:\n\
 1. the current directory  ... OR ...\n\
 2. the home directory (\"~/" + CONFIG_FILE_NAME + "\")\n\
-\n\
 Command line parameters override configuration file entries.\n\
+\n\
+A typical use-case for this script is logging:\n\
+The author is using this to log events to some kind of 'errors.org' which is part\n\
+of his Org mode agenda.\n\
+\n\
+  example_script.sh >out.log 2>&1 || appendorgheading --filecontent \"out.log\"\n\
+\n\
+This will use the default settings from your configuration file and log to the\n\
+defined Org mode file only if \"example_script.sh\" has an exit status not equal\n\
+to zero. It also appends the content of the log file for further analysis.\n\
 \n\
 \n\
 "
