@@ -59,11 +59,119 @@ the [[https://github.com/novoid/filetags/][GitHub repository of filetags]].
 
 Install filetags via [[https://pip.pypa.io/en/stable/][pip]]: ~pip install appendorgheading~
 
+** First Steps
+
+After installing, I'd recommend you to read the help screen
+=appendorgheading -h= or the *Usage* section below in order to get an
+overview on the possibilities.
+
+Then, you'd like to do *generate a stub of a configuration file* via:
+: appendorgheading --generateconfigfile testconfig.ini
+
+Alternatively, you can use as many command line options as you like when generating the configuration file similar to:
+: appendorgheading --generateconfigfile testconfig.ini --output ~/org/errors.org --level 2 --daily
+
+This will populate the generated configuration file with provided settings.
+
+If you do like the generated configuration file, rename and move it to
+one of the two locations in order to *activate the configuration file*:
+
+1. file =.appendorgheading= in the current working directory  OR
+2. in your home directory: =~/.appendorgheading=
+
+Provided settings do have following priorities:
+1. command line options
+2. =.appendorgheading= in the current working directory
+3. =~/.appendorgheading=
+
+In other words: command line options always overrule any configuration
+file settings. Therefore, you can put your default settings in a
+configuration file and overrule via command line parameters whenever
+necessary to keep the average command line parameters at a minimum
+just as in the "Why" section.
+
+If you are unsure, you can always *use the test option* =--dryrun=
+which doesn't change any files at all and tells you what would happen.
+
 ** Usage
 
- # #+BEGIN_SRC sh :results output :wrap src
- # ./appendorgheading/__init__.py --help | sed 'sX/home/vkX\$HOMEX'
- # #+END_SRC
+  # #+BEGIN_SRC sh :results output :wrap src
+  # ./appendorgheading/__init__.py --help | sed 'sX/home/vkX\$HOMEX'
+  # #+END_SRC
+
+ #+begin_src
+ usage: ./appendorgheading/__init__.py [-h] [--output <FILE.ORG>]
+                                       [--level <level>] [--keyword <TODO>]
+                                       [--priority "PRIO"]
+                                       [--title "HEADING TITLE"]
+                                       [--tags "STRING WITH TAGS"]
+                                       [--scheduled "STRING WITH DATE/TIME-STAMP"]
+                                       [--deadline "STRING WITH DATE/TIME-STAMP"]
+                                       [--properties "KEY1:VALUE1; KEY2:VALUE2"]
+                                       [--section "STRING"]
+                                       [--filecontent <FILE>] [--daily]
+                                       [--dryrun] [--generateconfigfile <FILE>]
+                                       [-v] [-q] [--version]
+
+ This tool appends Org mode formatted headings to existing Org mode files.
+
+ The optional configuration file ".appendorgheading" can be placed:
+ 1. the current directory  ... OR ...
+ 2. the home directory ("~/.appendorgheading")
+ Command line parameters override configuration file entries.
+
+ A typical use-case for this script is logging:
+ The author is using this to log events to some kind of 'errors.org' which is part
+ of his Org mode agenda.
+
+   example_script.sh >out.log 2>&1 || appendorgheading --filecontent "out.log"
+
+ This will use the default settings from your configuration file and log to the
+ defined Org mode file only if "example_script.sh" has an exit status not equal
+ to zero. It also appends the content of the log file for further analysis.
+
+ optional arguments:
+   -h, --help            show this help message and exit
+   --output <FILE.ORG>   Path to the Org mode file to append to
+   --level <level>       The heading level (number of asterisks): 1, 2, 3, ...
+   --keyword <TODO>      TODO keyword such as "TODO", "ERROR", ...
+   --priority "PRIO"     Priority indicator such as "A" or "C"
+   --title "HEADING TITLE"
+                         Title of the heading
+   --tags "STRING WITH TAGS"
+                         One or more tags (if multiple: in quotes, separated by
+                         spaces)
+   --scheduled "STRING WITH DATE/TIME-STAMP"
+                         An Org mode date- or time-stamp such as "<2019-12-29
+                         Sun>" which is added as SCHEDULED
+   --deadline "STRING WITH DATE/TIME-STAMP"
+                         An Org mode date- or time-stamp such as "<2019-12-29
+                         Sun>" which is added as DEADLINE
+   --properties "KEY1:VALUE1; KEY2:VALUE2"
+                         A string with key-value pairs. Colons separate keys
+                         from values, semicolons separate the key-value-pairs.
+   --section "STRING"    This is used as the section text or body of the
+                         heading.
+   --filecontent <FILE>  Path to a filename whose content gets appended to the
+                         section body within an EXAMPLE block
+   --daily               Add a time-stamp that is recurring on a daily basis
+   --dryrun              Enable dryrun mode: just simulate what would happen,
+                         do not modify files
+   --generateconfigfile <FILE>
+                         Path to a filename which gets created or overwritten
+                         with a configuration file that contains default values
+                         or the values given by the parameters
+   -v, --verbose         Enable verbose mode
+   -q, --quiet           Enable quiet mode
+   --version             Display version and exit
+
+ :copyright: (c) by Karl Voit <tools@Karl-Voit.at>
+ :license: GPL v3 or any later version
+ :URL: https://github.com/novoid/appendorgheading
+ :bugreports: via github or <tools@Karl-Voit.at>
+ :version: 2019-12-30
+ ·
+ #+end_src
 
 ** Configuration File
 
