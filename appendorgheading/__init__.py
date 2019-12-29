@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-29 19:25:01 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-30 00:19:30 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -42,7 +42,6 @@ The optional configuration file \"" + CONFIG_FILE_NAME + "\" can be placed:\n\
 2. the home directory (\"~/" + CONFIG_FILE_NAME + "\")\n\
 \n\
 Command line parameters override configuration file entries.\n\
-\n\
 \n\
 \n\
 "
@@ -208,7 +207,7 @@ def successful_exit():
     sys.stdout.flush()
     sys.exit(0)
 
-    
+
 def generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
                                         scheduled, deadline, rawproperties, section,
                                         filecontent, daily, verbose, quiet):
@@ -230,37 +229,37 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
     result += 'level = '
     if level:
         result += level
-    
+
     result += '\n\n# keyword: One TODO keyword\n'
     result += '# example: "TODO" or "CRITICAL"\n'
     result += 'keyword = '
     if keyword:
         result += keyword
-    
+
     result += '\n\n# priority: Priority indicator letter\n'
     result += '# example: "A" or "C"\n'
     result += 'priority = '
     if priority:
         result += priority
-    
+
     result += '\n\n# title: Title of the heading\n'
     result += '# example: "This is a new heading title"\n'
     result += 'title = '
     if title:
         result += title
-    
+
     result += '\n\n# tags: \n'
     result += '# example: ""\n'
     result += 'tags = '
     if rawtags:
         result += rawtags
-    
+
     result += '\n\n# scheduled: An Org mode date- or time-stamp which gets added as SCHEDULED\n'
     result += '# example: "<2019-12-29 Sun>"\n'
     result += 'scheduled = '
     if scheduled:
         result += scheduled
-    
+
     result += '\n\n# deadline: An Org mode date- or time-stamp which gets added as DEADLINE\n'
     result += '# example: "<2019-12-29 Sun>"\n'
     result += 'deadline = '
@@ -272,19 +271,19 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
     result += 'properties = '
     if rawproperties:
         result += rawproperties
-    
+
     result += '\n\n# section: This is used as the section text or body of the heading\n'
     result += '# example: "The new heading is important\\nbecause I will do this or that."\n'
     result += 'section = '
     if section:
         result += section
-    
+
     result += '\n\n# filecontent: Path to a filename whose content gets appended to the section body within an EXAMPLE block\n'
     result += '# example: ""\n'
     result += 'filecontent = '
     if filecontent:
         result += filecontent
-    
+
     result += '\n\n# daily: Add a time-stamp that is recurring on a daily basis\n'
     result += '# example: "True" or "False"\n'
     result += 'daily = '
@@ -292,7 +291,7 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
         result += "True"
     else:
         result += 'False'
-    
+
     result += '\n\n# verbose: Enable verbose mode\n'
     result += '# example: "True" or "False"\n'
     result += 'verbose = '
@@ -300,7 +299,7 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
         result += "True"
     else:
         result += 'False'
-    
+
     result += '\n\n# quiet: Enable quiet mode\n'
     result += '# example: "True" or "False"\n'
     result += 'quiet = '
@@ -308,7 +307,7 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
         result += "True"
     else:
         result += 'False'
-    
+
     # result += '\n\n# X: \n'
     # result += '# example: ""\n'
     # result += 'X = '
@@ -316,26 +315,26 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
     #     result += X
 
     result += '\n\n# End of configuration file'
-    
+
     return result
-    
-def main():
-    """Main function"""
 
-    if options.version:
-        print(os.path.basename(sys.argv[0]) + " version " + PROG_VERSION_DATE)
-        sys.exit(0)
 
-    handle_logging()
+def read_config_from_file():
+    """
+    Locate user configuration file and read user preferences from configuration file.
+    """
 
     logging.debug("locating and reading " + CONFIG_FILE_NAME + " ...")
+
     config = configparser.RawConfigParser()
     potential_config_file_locations = []
     config_file_read = False
+
     for directory in os.curdir, os.path.expanduser("~"):
         config_file_name = os.path.join(directory, CONFIG_FILE_NAME)
         potential_config_file_locations.append(config_file_name)
         #logging.debug('Probing for config file: ' + config_file_name)
+
         if os.path.isfile(config_file_name) and not config_file_read:
             logging.debug('Reading existing config file from: ' + config_file_name)
             config.read(config_file_name)
@@ -347,8 +346,10 @@ def main():
         else:
             logging.debug('Config file not found at: ' + config_file_name)
 
-    if not config_file_read:
-        logging.debug('No config found.')
+    return config_file_read, config, potential_config_file_locations
+
+
+def handle_preference_priorities(config_file_read, config):
 
     if options.output:
         output = options.output[0]
@@ -356,35 +357,35 @@ def main():
         output = config['DEFAULT']['output']
     else:
         output = None
-        
+
     if options.level:
         level = int(options.level[0])  # FIXXME: check for integer type
     elif config_file_read and 'level' in config['DEFAULT'].keys() and len(config['DEFAULT']['level']) > 0:
         level = int(config['DEFAULT']['level'])  # FIXXME: check for integer type
     else:
         level = None
-        
+
     if options.keyword:
         keyword = options.keyword[0]
     elif config_file_read and 'keyword' in config['DEFAULT'].keys() and len(config['DEFAULT']['keyword']) > 0:
         keyword = config['DEFAULT']['keyword']
     else:
         keyword = None
-        
+
     if options.priority:
         priority = options.priority[0]
     elif config_file_read and 'priority' in config['DEFAULT'].keys() and len(config['DEFAULT']['priority']) > 0:
         priority = config['DEFAULT']['priority']
     else:
         priority = None
-        
+
     if options.title:
         title = options.title[0]
     elif config_file_read and 'title' in config['DEFAULT'].keys() and len(config['DEFAULT']['title']) > 0:
         title = config['DEFAULT']['title']
     else:
         title = None
-        
+
     if options.tags:  # FIXXME: check for format before converting
         rawtags = options.tags[0]
     elif config_file_read and 'tags' in config['DEFAULT'].keys() and len(config['DEFAULT']['tags']) > 0:
@@ -393,14 +394,14 @@ def main():
         tags = None
     if rawtags:
         tags = rawtags.split(' ')
-        
+
     if options.scheduled:
         scheduled = options.scheduled[0]
     elif config_file_read and 'scheduled' in config['DEFAULT'].keys() and len(config['DEFAULT']['scheduled']) > 0:
         scheduled = config['DEFAULT']['scheduled']
     else:
         scheduled = None
-        
+
     if options.deadline:
         deadline = options.deadline[0]
     elif config_file_read and 'deadline' in config['DEFAULT'].keys() and len(config['DEFAULT']['deadline']) > 0:
@@ -421,48 +422,69 @@ def main():
         for pair in pairs:
             key, value = pair.strip().split(':')
             properties.append((key.strip(), value.strip()))
-        
+
     if options.section:
         section = options.section[0]
     elif config_file_read and 'section' in config['DEFAULT'].keys() and len(config['DEFAULT']['section']) > 0:
         section = config['DEFAULT']['section']
     else:
         section = None
-        
+
     if options.filecontent:
         filecontent = options.filecontent[0]
     elif config_file_read and 'filecontent' in config['DEFAULT'].keys() and len(config['DEFAULT']['filecontent']) > 0:
         filecontent = config['DEFAULT']['filecontent']
     else:
         filecontent = None
-        
+
     if options.generateconfigfile:
         generateconfigfile = options.generateconfigfile[0]
     elif config_file_read and 'generateconfigfile' in config['DEFAULT'].keys() and len(config['DEFAULT']['generateconfigfile']) > 0:
         generateconfigfile = config['DEFAULT']['generateconfigfile']
     else:
         generateconfigfile = None
-        
+
     if options.daily:
         daily = True
     elif config_file_read and 'daily' in config['DEFAULT'].keys() and len(config['DEFAULT']['daily']) > 0:
         daily = config['DEFAULT'].getboolean('daily')
     else:
         daily = False
-        
+
     if options.verbose:
         verbose = True
     elif config_file_read and 'verbose' in config['DEFAULT'].keys() and len(config['DEFAULT']['verbose']) > 0:
         verbose = config['DEFAULT'].getboolean('verbose')
     else:
         verbose = False
-        
+
     if options.quiet:
         quiet = True
     elif config_file_read and 'quiet' in config['DEFAULT'].keys() and len(config['DEFAULT']['quiet']) > 0:
         quiet = config['DEFAULT'].getboolean('quiet')
     else:
         quiet = False
+
+    return scheduled, rawtags, verbose, keyword, tags, section, generateconfigfile, rawproperties, quiet, daily, priority, deadline, filecontent, output, title, level, properties
+
+
+def main():
+    """Main function"""
+
+    if options.version:
+        print(os.path.basename(sys.argv[0]) + " version " + PROG_VERSION_DATE)
+        sys.exit(0)
+
+    handle_logging()
+
+    config_file_read, config, potential_config_file_locations = read_config_from_file()
+
+    if not config_file_read:
+        logging.debug('No config found.')
+
+    scheduled, rawtags, verbose, keyword, tags, section, generateconfigfile, rawproperties, \
+        quiet, daily, priority, deadline, filecontent, output, title, level, properties = \
+            handle_preference_priorities(config_file_read, config)
 
     if verbose and quiet:
         error_exit(1, "Options and/or configuration for \"verbose\" and \"quiet\" found. " +
@@ -475,7 +497,7 @@ def main():
                  ('section', section), ('filecontent', filecontent),
                  ('daily', daily), ('verbose', verbose), ('quiet', quiet)]:
         logging.debug('Variable ' + str(pair[0]) + ': [' + str(pair[1]) + ']')
-        
+
     if generateconfigfile:
         config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags, scheduled, deadline, rawproperties, section, filecontent, daily, verbose, quiet)
         if options.dryrun:
@@ -492,7 +514,7 @@ def main():
     else:
         pass
 
-    
+
     successful_exit()
 
 
