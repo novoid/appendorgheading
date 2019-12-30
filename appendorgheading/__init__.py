@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-30 11:22:22 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-30 11:58:16 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -13,13 +13,13 @@ PROG_VERSION = "Time-stamp: <2019-12-30 11:22:22 vk>"
 
 from importlib import import_module
 
-def save_import(library):
-    try:
-        globals()[library] = import_module(library)
-    except ImportError:
-        print("Could not find Python module \"" + library +
-              "\".\nPlease install it, e.g., with \"sudo pip install " + library + "\".")
-        sys.exit(2)
+#def save_import(library):
+#    try:
+#        globals()[library] = import_module(library)
+#    except ImportError:
+#        print("Could not find Python module \"" + library +
+#              "\".\nPlease install it, e.g., with \"sudo pip install " + library + "\".")
+#        sys.exit(2)
 
 import sys
 import os
@@ -27,7 +27,8 @@ import argparse   # for handling command line arguments
 import time
 import logging
 import configparser
-save_import('orgformat')
+from orgformat import OrgFormat, TimestampParseException
+#save_import('orgformat')
 
 PROG_VERSION_DATE = PROG_VERSION[13:23]
 
@@ -194,17 +195,17 @@ def handle_logging(verbose, quiet):
                    "This does not make any sense, if you think about it. You silly fool :-)")
     
     if verbose:
-        print('set to verbose')
         FORMAT = "%(levelname)-8s %(asctime)-15s %(message)s"
         logging.basicConfig(level=logging.DEBUG, format=FORMAT)
+        logging.debug('logging set to verbose')
     elif quiet:
-        print('set to quiet')
         FORMAT = "%(levelname)-8s %(message)s"
         logging.basicConfig(level=logging.ERROR, format=FORMAT)
+        logging.debug('logging set to quiet')
     else:
-        print('set to else')
         FORMAT = "%(levelname)-8s %(message)s"
         logging.basicConfig(level=logging.INFO, format=FORMAT)
+        logging.debug('logging set to else')
 
 
 def error_exit(errorcode, text):
@@ -463,9 +464,18 @@ def check_arguments(output, level, keyword, priority, title, rawtags, tags, sche
     pass ## FIXXME
 
 
-def generate_heading_wrapper(level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties, properties, section, filecontent, daily):
-    pass  ## FIXXME
+def generate_heading_wrapper(level, keyword, priority, title, tags, scheduled, deadline, properties, section):
 
+    return OrgFormat.generate_heading(level=level,
+                                      keyword=keyword,
+                                      priority=priority,
+                                      title=title,
+                                      tags=tags,
+                                      scheduled_timestamp=scheduled,
+                                      deadline_timestamp=deadline,
+                                      properties=properties,
+                                      section=section)
+    
 
 def main():
     """Main function"""
@@ -494,11 +504,14 @@ def main():
                  ('daily', daily)]:
         logging.debug('Variable ' + str(pair[0]) + ': [' + str(pair[1]) + ']')
 
-    check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties, properties, section, filecontent, daily)
+    check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline,
+                    rawproperties, properties, section, filecontent, daily)
         
     if generateconfigfile:
-        config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags, scheduled, deadline, rawproperties, section, filecontent, daily)
-        if dryrun:
+        config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
+                                                                  scheduled, deadline, rawproperties, section,
+                                                                  filecontent, daily)
+        if options.dryrun:
             logging.info('I would write the file "%s" with following content:' % generateconfigfile)
             print('-' * 80)
             print(config_file_content)
@@ -509,12 +522,32 @@ def main():
                 outputhandle.write(config_file_content)
             logging.info('Copy newly written configuration file to one of the locations: ' + str(potential_config_file_locations)[1:-1])
             logging.debug('New configuration written.')
+            
     elif not output or not level:
         logging.info('Please do provide at least "output" and "level" parameters to generate a heading.')
-    else:
-        content = generate_heading_wrapper(level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties, properties, section, filecontent, daily)
-        ## write to file (if not dryrun)
 
+    else:
+        if daily:
+            pass  # FIXXME: daily -> time-stamp + recurring
+        if filecontent and section:
+            pass  # FIXXME
+        elif filecontent:
+            pass  # FIXXME
+        elif section:
+            pass  # FIXXME
+        content = generate_heading_wrapper(int(level), keyword, priority, title, tags, scheduled, deadline,
+                                           properties, section)
+        if options.dryrun:
+            logging.info('I would append to the file "%s" the following content:' % output)
+            print('-' * 80)
+            print(content)
+            print('-' * 80)
+        else:
+            logging.debug('content: \n' + content)
+            logging.debug('Appending content to: ' + output)
+            with open(output, 'a') as outputhandle:  # FIXXME: check if append and not overwrite!
+                outputhandle.write(content)
+            logging.debug('Content written.')
 
     successful_exit()
 
