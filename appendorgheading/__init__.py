@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-30 17:03:53 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-30 17:58:57 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -425,8 +425,11 @@ def handle_preference_priorities(config_file_read, config):
         properties = []
         pairs = options.properties[0].split(';')
         for pair in pairs:
-            key, value = pair.strip().split(':')
-            properties.append((key.strip(), value.strip()))
+            try:
+                key, value = pair.strip().split(':')
+                properties.append((key.strip(), value.strip()))
+            except ValueError:
+                error_exit(92, 'Properties parameter "' + str(rawproperties) + '" has wrong format.')
 
     if options.section:
         section = options.section[0]
@@ -460,9 +463,105 @@ def handle_preference_priorities(config_file_read, config):
         daily, priority, deadline, filecontent, output, title, level, properties
 
 
+def is_int(string):
+    """
+    Checks if a given string can be casted to an integer without an error.
+
+    @param string: string that potentially contains an integer number as text
+    @param return: boolean that reflects if the string contains an integer
+    """
+    try:
+        val = int(string)
+        return val
+    except ValueError:
+        return False
+
+
 def check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline,
-                    rawproperties, properties, section, filecontent, daily):
-    pass ## FIXXME
+                    rawproperties, properties, section, filecontent):
+
+    if output:
+        assert isinstance(output, str)
+        dirname = os.path.dirname(output)
+        if len(dirname) > 0 and not os.path.isdir(dirname):
+            error_exit(10, 'Directory of output file "' + str(output) + '" can not be found. Please make sure ' +
+                       'to provide an existing output file or at least an existing directory.')
+        elif not os.path.isfile(output):
+            logging.info('Output file "' + output + '" can not be found. It will be created.')
+
+    if level or level == 0:
+        if not is_int(level) or int(level) < 1:
+            error_exit(20, 'Level parameter "' + str(level) + '" is not a positive integer value.')
+
+    if keyword:
+        assert isinstance(keyword, str)
+        if ' ' in keyword or '\n' in keyword:
+            error_exit(25, 'Keyword parameter "' + str(keyword) + '" contains a space or newline. Org mode does like single-word keywords, upper-case by convention.')
+
+    if priority:
+        assert isinstance(priority, str)
+        if priority not in ['A', 'B', 'C']:
+            error_exit(30, 'Priority parameter "' + str(priority) + '" is A, B or C. By convention, there are no other priorities in Org mode.')
+
+    if title:
+        assert isinstance(title, str)
+        if '\n' in title:
+            error_exit(40, 'Title parameter "' + str(title) + '" is a multi-line string. Please stick to one line.')
+
+    if rawtags:
+        assert isinstance(rawtags, str)
+        if '\n' in rawtags:
+            error_exit(50, 'Tags parameter "' + str(rawtags) + '" is a multi-line string. Please stick to one line.')
+        if ':' in rawtags:
+            error_exit(51, 'Tags parameter "' + str(rawtags) + '" contains one or more colons. Please stick spaces as separation characters here.')
+
+    if tags:  # ['foo', 'bar', 'baz']
+        assert isinstance(tags, list)
+        for tag in tags:
+            assert isinstance(tag, str)
+            assert ':' not in tag
+            assert ' ' not in tag
+
+    if scheduled:
+        assert isinstance(scheduled, str)
+        if scheduled[0] not in ['<', '['] or scheduled[-1] not in ['>', ']']:
+            error_exit(70, 'Scheduled parameter "' + str(scheduled) + '" does not have the <...> or [...] format as expected.')
+        else:
+            try:
+                mytest = OrgFormat.strdate(scheduled[1:-1])
+            except:
+                error_exit(71, 'Scheduled parameter "' + str(scheduled) + '" is not a valid Org mode time/date-stamp.')
+
+    if deadline:
+        assert isinstance(deadline, str)
+        if deadline[0] not in ['<', '['] or deadline[-1] not in ['>', ']']:
+            error_exit(80, 'Deadline parameter "' + str(deadline) + '" does not have the <...> or [...] format as expected.')
+        else:
+            try:
+                mytest = OrgFormat.strdate(deadline[1:-1])
+            except:
+                error_exit(81, 'Deadline parameter "' + str(deadline) + '" is not a valid Org mode time/date-stamp.')
+
+    if rawproperties:  # "key1:value1; key2 : value 2; key 3 : value 3"
+        assert isinstance(rawproperties, str)
+        if not ':' in rawproperties:
+            error_exit(90, 'Properties parameter "' + str(properties) + '" does not have a single colon as key-value separation character: wrong format.')
+
+    if properties:  # [('key1', 'value1'), ('key2', 'value 2'), ('key 3', 'value 3')]
+        assert isinstance(properties, list)
+        for myproperty in properties:
+            assert isinstance(myproperty, tuple)
+            key, value = myproperty
+            if ':' in key or ':' in value:
+                error_exit(91, 'Properties parameter "' + str(properties) + '" does contain at least one colon: wrong format.')
+
+    if section:
+        assert isinstance(section, str)
+
+    if filecontent:
+        assert isinstance(filecontent, str)
+        if not os.path.isfile(filecontent):
+            error_exit(100, 'Filecontent parameter "' + str(filecontent) + '" does not point to an existing file.')
 
 
 def generate_heading_wrapper(level, keyword, priority, title, tags, scheduled, deadline, properties, section):
@@ -506,7 +605,7 @@ def main():
         logging.debug('Variable ' + str(pair[0]) + ': [' + str(pair[1]) + ']')
 
     check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline,
-                    rawproperties, properties, section, filecontent, daily)
+                    rawproperties, properties, section, filecontent)
 
     if generateconfigfile:
         config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
@@ -555,7 +654,7 @@ def main():
         else:
             logging.debug('content: \n' + content)
             logging.debug('Appending content to: ' + output)
-            with open(output, 'a+') as outputhandle:  # FIXXME: check if append and not overwrite!
+            with open(output, 'a+') as outputhandle:
                 outputhandle.write('\n' + content)
             logging.debug('Content written.')
 
