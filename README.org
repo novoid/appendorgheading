@@ -53,11 +53,11 @@ priorities, and other Org mode heading properties. See section
 
 This tool needs [[http://www.python.org/downloads/][Python 3 to be installed]].
 
-You can install filetags either via [[https://packaging.python.org/tutorials/installing-packages/][pip]] which is the recommended way.
-Or you can install filetags using the source code, e.g., by cloning
-the [[https://github.com/novoid/filetags/][GitHub repository of filetags]].
+You can install this script either via [[https://packaging.python.org/tutorials/installing-packages/][pip]] which is the recommended
+way. Or you can install it using the source code, e.g., by cloning the
+[[https://github.com/novoid/appendorgheading/][GitHub repository]].
 
-Install filetags via [[https://pip.pypa.io/en/stable/][pip]]: ~pip install appendorgheading~
+Install via [[https://pip.pypa.io/en/stable/][pip]]: ~pip install appendorgheading~
 
 ** First Steps
 
@@ -100,18 +100,18 @@ which doesn't change any files at all and tells you what would happen.
   # #+END_SRC
 
  #+begin_src
- usage: ./appendorgheading/__init__.py [-h] [--output <FILE.ORG>]
-                                       [--level <level>] [--keyword <TODO>]
-                                       [--priority "PRIO"]
-                                       [--title "HEADING TITLE"]
-                                       [--tags "STRING WITH TAGS"]
-                                       [--scheduled "STRING WITH DATE/TIME-STAMP"]
-                                       [--deadline "STRING WITH DATE/TIME-STAMP"]
-                                       [--properties "KEY1:VALUE1; KEY2:VALUE2"]
-                                       [--section "STRING"]
-                                       [--filecontent <FILE>] [--daily]
-                                       [--dryrun] [--generateconfigfile <FILE>]
-                                       [-v] [-q] [--version]
+ usage: appendorgheading [-h] [--output <FILE.ORG>]
+                         [--level <level>] [--keyword <TODO>]
+                         [--priority "PRIO"]
+                         [--title "HEADING TITLE"]
+                         [--tags "STRING WITH TAGS"]
+                         [--scheduled "STRING WITH DATE/TIME-STAMP"]
+                         [--deadline "STRING WITH DATE/TIME-STAMP"]
+                         [--properties "KEY1:VALUE1; KEY2:VALUE2"]
+                         [--section "STRING"]
+                         [--filecontent <FILE>] [--daily]
+                         [--dryrun] [--generateconfigfile <FILE>]
+                         [-v] [-q] [--version]
 
  This tool appends Org mode formatted headings to existing Org mode files.
 
@@ -173,11 +173,9 @@ which doesn't change any files at all and tells you what would happen.
  ·
  #+end_src
 
-** Configuration File
-
 ** Changelog
 
-- 2019.12.29.1: first version on GitHub
+- 2019.12.30.1: first version
 
 * How to Thank Me
 
