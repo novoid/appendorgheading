@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-30 11:58:16 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-30 17:03:53 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -24,7 +24,7 @@ from importlib import import_module
 import sys
 import os
 import argparse   # for handling command line arguments
-import time
+import datetime
 import logging
 import configparser
 from orgformat import OrgFormat, TimestampParseException
@@ -193,7 +193,7 @@ def handle_logging(verbose, quiet):
     if verbose and quiet:
         error_exit(1, "Command line arguments for \"--verbose\" and \"--quiet\" found. " +
                    "This does not make any sense, if you think about it. You silly fool :-)")
-    
+
     if verbose:
         FORMAT = "%(levelname)-8s %(asctime)-15s %(message)s"
         logging.basicConfig(level=logging.DEBUG, format=FORMAT)
@@ -243,7 +243,7 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
     result += '# example: "2"\n'
     result += 'level = '
     if level:
-        result += level
+        result += str(level)
 
     result += '\n\n# keyword: One TODO keyword\n'
     result += '# example: "TODO" or "CRITICAL"\n'
@@ -311,7 +311,7 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
                   'However, the logging library had issues of changing logging level after ' +
                   'it was initially set via the command line parameters. So I had to remove ' +
                   'them from the configuration file. Sorry that you can\'t configure them here.')
-        
+
     # result += '\n\n# X: \n'
     # result += '# example: ""\n'
     # result += 'X = '
@@ -328,7 +328,7 @@ def read_config_from_file():
     Locate user configuration file and read user preferences from configuration file.
     """
 
-    logging.debug("locating and reading " + CONFIG_FILE_NAME + " ...")
+    logging.debug("locating and reading configuration file as: \"" + CONFIG_FILE_NAME + "\" ...")
 
     config = configparser.RawConfigParser()
     potential_config_file_locations = []
@@ -340,15 +340,15 @@ def read_config_from_file():
         #logging.debug('Probing for config file: ' + config_file_name)
 
         if os.path.isfile(config_file_name) and not config_file_read:
-            logging.debug('Reading existing config file from: ' + config_file_name)
+            logging.debug('Reading existing config file "' + config_file_name + '"')
             config.read(config_file_name)
             config_file_read = True
         elif os.path.isfile(config_file_name) and config_file_read:
-            logging.debug('Existing config file was overruled by previous one: ' + config_file_name)
+            logging.debug('Existing config file "' + config_file_name + '" was overruled by previous one')
         elif not os.path.isfile(config_file_name) and config_file_read:
-            logging.debug('Non-existing config file would have been overruled by previous one: ' + config_file_name)
+            logging.debug('Non-existing config file "' + config_file_name + '" would have been overruled by previous one')
         else:
-            logging.debug('Config file not found at: ' + config_file_name)
+            logging.debug('No config file not found at: ' + config_file_name)
 
     return config_file_read, config, potential_config_file_locations
 
@@ -390,6 +390,7 @@ def handle_preference_priorities(config_file_read, config):
     else:
         title = None
 
+    rawtags = None
     if options.tags:  # FIXXME: check for format before converting
         rawtags = options.tags[0]
     elif config_file_read and 'tags' in config['DEFAULT'].keys() and len(config['DEFAULT']['tags']) > 0:
@@ -475,7 +476,7 @@ def generate_heading_wrapper(level, keyword, priority, title, tags, scheduled, d
                                       deadline_timestamp=deadline,
                                       properties=properties,
                                       section=section)
-    
+
 
 def main():
     """Main function"""
@@ -506,7 +507,7 @@ def main():
 
     check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline,
                     rawproperties, properties, section, filecontent, daily)
-        
+
     if generateconfigfile:
         config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
                                                                   scheduled, deadline, rawproperties, section,
@@ -522,21 +523,30 @@ def main():
                 outputhandle.write(config_file_content)
             logging.info('Copy newly written configuration file to one of the locations: ' + str(potential_config_file_locations)[1:-1])
             logging.debug('New configuration written.')
-            
+
     elif not output or not level:
         logging.info('Please do provide at least "output" and "level" parameters to generate a heading.')
 
     else:
+        body = ''
         if daily:
-            pass  # FIXXME: daily -> time-stamp + recurring
-        if filecontent and section:
-            pass  # FIXXME
-        elif filecontent:
-            pass  # FIXXME
-        elif section:
-            pass  # FIXXME
+            body += OrgFormat.date(datetime.datetime.now(), show_time=True, inactive=False, repeater_or_delay='+1d' ) + '\n'
+        if section:
+            body += section.strip() + '\n'
+        if filecontent:
+            body += '\nFile content of "' + filecontent + '":\n'
+            body += '#+BEGIN_EXAMPLE\n'
+            import codecs
+            with codecs.open(filecontent, 'r', encoding='utf-8') as input:
+                for rawline in input:
+                    line = rawline.rstrip()
+                    if line.startswith('*') or line.upper().startswith('#+BEGIN_EXAMPLE') or line.upper().startswith('#+END_EXAMPLE'):
+                        body += ','
+                    body += line + '\n'
+            body += '#+END_EXAMPLE\n'
+
         content = generate_heading_wrapper(int(level), keyword, priority, title, tags, scheduled, deadline,
-                                           properties, section)
+                                           properties, body)
         if options.dryrun:
             logging.info('I would append to the file "%s" the following content:' % output)
             print('-' * 80)
@@ -545,8 +555,8 @@ def main():
         else:
             logging.debug('content: \n' + content)
             logging.debug('Appending content to: ' + output)
-            with open(output, 'a') as outputhandle:  # FIXXME: check if append and not overwrite!
-                outputhandle.write(content)
+            with open(output, 'a+') as outputhandle:  # FIXXME: check if append and not overwrite!
+                outputhandle.write('\n' + content)
             logging.debug('Content written.')
 
     successful_exit()
