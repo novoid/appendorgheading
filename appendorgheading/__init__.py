@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-30 17:58:57 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-30 19:19:12 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -631,7 +631,7 @@ def main():
         if daily:
             body += OrgFormat.date(datetime.datetime.now(), show_time=True, inactive=False, repeater_or_delay='+1d' ) + '\n'
         if section:
-            body += section.strip() + '\n'
+            body += section.strip().replace('\\n', '\n') + '\n'
         if filecontent:
             body += '\nFile content of "' + filecontent + '":\n'
             body += '#+BEGIN_EXAMPLE\n'
