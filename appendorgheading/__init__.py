@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-30 01:03:11 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-30 11:22:22 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -27,6 +27,7 @@ import argparse   # for handling command line arguments
 import time
 import logging
 import configparser
+save_import('orgformat')
 
 PROG_VERSION_DATE = PROG_VERSION[13:23]
 
@@ -185,16 +186,23 @@ parser.add_argument("--version",
 options = parser.parse_args()
 
 
-def handle_logging():
+def handle_logging(verbose, quiet):
     """Log handling and configuration"""
 
-    if options.verbose:
+    if verbose and quiet:
+        error_exit(1, "Command line arguments for \"--verbose\" and \"--quiet\" found. " +
+                   "This does not make any sense, if you think about it. You silly fool :-)")
+    
+    if verbose:
+        print('set to verbose')
         FORMAT = "%(levelname)-8s %(asctime)-15s %(message)s"
         logging.basicConfig(level=logging.DEBUG, format=FORMAT)
-    elif options.quiet:
+    elif quiet:
+        print('set to quiet')
         FORMAT = "%(levelname)-8s %(message)s"
         logging.basicConfig(level=logging.ERROR, format=FORMAT)
     else:
+        print('set to else')
         FORMAT = "%(levelname)-8s %(message)s"
         logging.basicConfig(level=logging.INFO, format=FORMAT)
 
@@ -216,7 +224,7 @@ def successful_exit():
 
 def generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
                                         scheduled, deadline, rawproperties, section,
-                                        filecontent, daily, verbose, quiet):
+                                        filecontent, daily):
     """
     Create or overwrite a configuration file with the given options.
     """
@@ -298,22 +306,11 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
     else:
         result += 'False'
 
-    result += '\n\n# verbose: Enable verbose mode\n'
-    result += '# example: "True" or "False"\n'
-    result += 'verbose = '
-    if verbose:
-        result += "True"
-    else:
-        result += 'False'
-
-    result += '\n\n# quiet: Enable quiet mode\n'
-    result += '# example: "True" or "False"\n'
-    result += 'quiet = '
-    if quiet:
-        result += "True"
-    else:
-        result += 'False'
-
+    logging.debug('There once were "verbose" and "quiet" in the configuration file as well. ' +
+                  'However, the logging library had issues of changing logging level after ' +
+                  'it was initially set via the command line parameters. So I had to remove ' +
+                  'them from the configuration file. Sorry that you can\'t configure them here.')
+        
     # result += '\n\n# X: \n'
     # result += '# example: ""\n'
     # result += 'X = '
@@ -457,21 +454,17 @@ def handle_preference_priorities(config_file_read, config):
     else:
         daily = False
 
-    if options.verbose:
-        verbose = True
-    elif config_file_read and 'verbose' in config['DEFAULT'].keys() and len(config['DEFAULT']['verbose']) > 0:
-        verbose = config['DEFAULT'].getboolean('verbose')
-    else:
-        verbose = False
+    return scheduled, rawtags, keyword, tags, section, generateconfigfile, rawproperties, \
+        daily, priority, deadline, filecontent, output, title, level, properties
 
-    if options.quiet:
-        quiet = True
-    elif config_file_read and 'quiet' in config['DEFAULT'].keys() and len(config['DEFAULT']['quiet']) > 0:
-        quiet = config['DEFAULT'].getboolean('quiet')
-    else:
-        quiet = False
 
-    return scheduled, rawtags, verbose, keyword, tags, section, generateconfigfile, rawproperties, quiet, daily, priority, deadline, filecontent, output, title, level, properties
+def check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline,
+                    rawproperties, properties, section, filecontent, daily):
+    pass ## FIXXME
+
+
+def generate_heading_wrapper(level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties, properties, section, filecontent, daily):
+    pass  ## FIXXME
 
 
 def main():
@@ -481,32 +474,31 @@ def main():
         print(os.path.basename(sys.argv[0]) + " version " + PROG_VERSION_DATE)
         sys.exit(0)
 
-    handle_logging()
+    handle_logging(options.verbose, options.quiet)
 
     config_file_read, config, potential_config_file_locations = read_config_from_file()
 
     if not config_file_read:
         logging.debug('No config found.')
 
-    scheduled, rawtags, verbose, keyword, tags, section, generateconfigfile, rawproperties, \
-        quiet, daily, priority, deadline, filecontent, output, title, level, properties = \
+    scheduled, rawtags, keyword, tags, section, generateconfigfile, rawproperties, \
+        daily, priority, deadline, filecontent, output, title, level, properties = \
             handle_preference_priorities(config_file_read, config)
 
-    if verbose and quiet:
-        error_exit(1, "Options and/or configuration for \"verbose\" and \"quiet\" found. " +
-                   "This does not make any sense, if you think about it. You silly fool :-)")
-
+    # output, level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties, properties, section, filecontent, daily
     for pair in [('output', output), ('level', level), ('keyword', keyword), ('priority', priority),
                  ('title', title), ('rawtags', rawtags), ('tags', tags),
                  ('scheduled', scheduled), ('deadline', deadline),
                  ('rawproperties', rawproperties), ('properties', properties),
                  ('section', section), ('filecontent', filecontent),
-                 ('daily', daily), ('verbose', verbose), ('quiet', quiet)]:
+                 ('daily', daily)]:
         logging.debug('Variable ' + str(pair[0]) + ': [' + str(pair[1]) + ']')
 
+    check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties, properties, section, filecontent, daily)
+        
     if generateconfigfile:
-        config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags, scheduled, deadline, rawproperties, section, filecontent, daily, verbose, quiet)
-        if options.dryrun:
+        config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags, scheduled, deadline, rawproperties, section, filecontent, daily)
+        if dryrun:
             logging.info('I would write the file "%s" with following content:' % generateconfigfile)
             print('-' * 80)
             print(config_file_content)
@@ -517,8 +509,11 @@ def main():
                 outputhandle.write(config_file_content)
             logging.info('Copy newly written configuration file to one of the locations: ' + str(potential_config_file_locations)[1:-1])
             logging.debug('New configuration written.')
+    elif not output or not level:
+        logging.info('Please do provide at least "output" and "level" parameters to generate a heading.')
     else:
-        pass
+        content = generate_heading_wrapper(level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties, properties, section, filecontent, daily)
+        ## write to file (if not dryrun)
 
 
     successful_exit()
