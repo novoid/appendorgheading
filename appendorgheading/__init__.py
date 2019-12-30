@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-30 00:48:49 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-30 01:03:11 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -157,7 +157,7 @@ parser.add_argument("--filecontent",
                     help="Path to a filename whose content gets appended to the section body within an EXAMPLE block")
 
 parser.add_argument("--daily", action="store_true",
-                    help="Add a time-stamp that is recurring on a daily basis")
+                    help="Add a time-stamp for today which is recurring on a daily basis")
 
 parser.add_argument("--dryrun", dest="dryrun", action="store_true",
                     help="Enable dryrun mode: just simulate what would happen, do not modify files")
@@ -254,8 +254,8 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
     if title:
         result += title
 
-    result += '\n\n# tags: \n'
-    result += '# example: ""\n'
+    result += '\n\n# tags: One or more tags (if multiple: in quotes, separated by spaces)\n'
+    result += '# example: "tag1 tag2"\n'
     result += 'tags = '
     if rawtags:
         result += rawtags
@@ -285,12 +285,12 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
         result += section
 
     result += '\n\n# filecontent: Path to a filename whose content gets appended to the section body within an EXAMPLE block\n'
-    result += '# example: ""\n'
+    result += '# example: "~/my logs/logfile.txt"\n'
     result += 'filecontent = '
     if filecontent:
         result += filecontent
 
-    result += '\n\n# daily: Add a time-stamp that is recurring on a daily basis\n'
+    result += '\n\n# daily: Add a time-stamp for today which is recurring on a daily basis\n'
     result += '# example: "True" or "False"\n'
     result += 'daily = '
     if daily:
