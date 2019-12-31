@@ -1,36 +1,17 @@
 * Unit Tests
 
-This unit test framework works like this: *the central [[file:runtests.sh][runtests.sh]] script
-is started to run all unit tests*.
-
----------------------
-
 A unit tests is a sub-directory that starts with the string =test_=
 and contains no spaces.
 
 Within a unit test, there are mandatory and optional files.
 
-** Mandatory Files
+** Running Unit Tests
 
-- =runtest.sh= :: the shell script that runs this unit test.
-- =expected_output*= :: the comparison content for the corresponding output file
-  - There needs to be at least =expected_output1.*=. The extension
-    can be anything, no spaces in file name.
-- =output*= :: the output content for the corresponding test result
-  - There needs to be at least =output1.*=. The extension can be
-    anything, no spaces in file name.
+*The central [[file:runtests.sh][runtests.sh]] script is started to run all unit tests*.
 
-** Optional Files
+All unit tests are then found via directory and file name convention.
 
-- =README.org= :: a human-readable description for this test case
-- =input*= :: one or more input files
-  - By convention, the files are named =input1*=, =input2*= and so forth.
-  - The extension can be anything.
-- Additional files such as configuration files.
-  - Their file name must not start with =input=, =expected_output= or
-    =output=.
-
-** Creating an Additional Unit Test
+** Creating Unit Tests
 
 1. Create a sub-directory relatively to the =runtests.sh= file.
    - Name starts with =test_= and must not contain spaces.
@@ -43,3 +24,31 @@ Within a unit test, there are mandatory and optional files.
 
 =runtests.sh= will recognize the new unit test by directory name
 convention and start the unit test by shell script name convention.
+
+*** Mandatory Files
+
+- =runtest.sh= :: the shell script that runs this unit test.
+- =expected_output*= :: the comparison content for the corresponding output file
+  - There needs to be at least =expected_output1.*=. The extension
+    can be anything, no spaces in file name.
+- =output*= :: the output content for the corresponding test result
+  - There needs to be at least =output1.*=. The extension can be
+    anything, no spaces in file name.
+
+*** Optional Files
+
+- =README.org= :: a human-readable description for this test case
+- =input*= :: one or more input files
+  - By convention, the files are named =input1*=, =input2*= and so forth.
+  - The extension can be anything.
+- Additional files such as configuration files.
+  - Their file name must not start with =input=, =expected_output= or
+    =output=.
+
+*** Disadvantages of This Framework
+
+You can't test for expected errors since they cause return values
+other than zero which is used here to report a negative result.
+
+You can't use any output that depends on the current situation such as
+a date- or time-stamp since this is comparing to exact output only.
