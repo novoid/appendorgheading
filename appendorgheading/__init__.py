@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-30 19:19:12 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-31 14:10:32 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -426,7 +426,7 @@ def handle_preference_priorities(config_file_read, config):
         pairs = options.properties[0].split(';')
         for pair in pairs:
             try:
-                key, value = pair.strip().split(':')
+                key, value = pair.strip().split(':', 1)
                 properties.append((key.strip(), value.strip()))
             except ValueError:
                 error_exit(92, 'Properties parameter "' + str(rawproperties) + '" has wrong format.')
@@ -552,7 +552,7 @@ def check_arguments(output, level, keyword, priority, title, rawtags, tags, sche
         for myproperty in properties:
             assert isinstance(myproperty, tuple)
             key, value = myproperty
-            if ':' in key or ':' in value:
+            if ':' in key:
                 error_exit(91, 'Properties parameter "' + str(properties) + '" does contain at least one colon: wrong format.')
 
     if section:
