@@ -56,7 +56,7 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
+#DISABLED# *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -127,7 +127,15 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-tests/
-test.py
+
+###############################################
+# from user:
+
+manual_testing/out.log
 update_pip.sh
 out.org
+output1.*
+output2.*
+output3.*
+output4.*
+output5.*
