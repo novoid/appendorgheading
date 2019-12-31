@@ -1,2 +1,2 @@
-This unit test is testing the good case with all possible command 
-line arguments that override the configuration file.
+This unit test is testing the creation of a new configuration file
+with presets from the command line environment.
