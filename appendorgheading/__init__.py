@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-31 15:01:20 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-31 15:13:09 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -396,6 +396,8 @@ def handle_preference_priorities(config_file_read, config):
         title = config['DEFAULT']['title']
     else:
         title = None
+    if title:
+        title = remove_leading_and_trailing_quotations(title)
 
     rawtags = None
     if options.tags:  # FIXXME: check for format before converting
@@ -405,6 +407,7 @@ def handle_preference_priorities(config_file_read, config):
     else:
         tags = None
     if rawtags:
+        rawtags = remove_leading_and_trailing_quotations(rawtags)
         tags = rawtags.split(' ')
 
     if options.scheduled:
@@ -433,6 +436,7 @@ def handle_preference_priorities(config_file_read, config):
         properties = None
         rawproperties = None
     if rawproperties:
+        rawproperties = remove_leading_and_trailing_quotations(rawproperties)
         properties = []
         pairs = rawproperties.split(';')
         for pair in pairs:
@@ -448,6 +452,8 @@ def handle_preference_priorities(config_file_read, config):
         section = config['DEFAULT']['section']
     else:
         section = None
+    if section:
+        section = remove_leading_and_trailing_quotations(section)
 
     if options.filecontent:
         filecontent = options.filecontent[0]
