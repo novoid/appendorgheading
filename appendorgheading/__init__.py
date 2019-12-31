@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-31 14:10:32 vk>"
+PROG_VERSION = "Time-stamp: <2019-12-31 15:01:20 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -355,6 +355,13 @@ def read_config_from_file():
 
 def handle_preference_priorities(config_file_read, config):
 
+    def remove_leading_and_trailing_quotations(mystring):
+        if mystring[0] == '"':
+            mystring = mystring[1:]
+        if mystring[-1] == '"':
+            mystring = mystring[:-1]
+        return mystring
+
     if options.output:
         output = options.output[0]
     elif config_file_read and 'output' in config['DEFAULT'].keys() and len(config['DEFAULT']['output']) > 0:
@@ -406,6 +413,8 @@ def handle_preference_priorities(config_file_read, config):
         scheduled = config['DEFAULT']['scheduled']
     else:
         scheduled = None
+    if scheduled:
+        scheduled = remove_leading_and_trailing_quotations(scheduled)
 
     if options.deadline:
         deadline = options.deadline[0]
@@ -413,6 +422,8 @@ def handle_preference_priorities(config_file_read, config):
         deadline = config['DEFAULT']['deadline']
     else:
         deadline = None
+    if deadline:
+        deadline = remove_leading_and_trailing_quotations(deadline)
 
     if options.properties:
         rawproperties = options.properties[0]
@@ -423,7 +434,7 @@ def handle_preference_priorities(config_file_read, config):
         rawproperties = None
     if rawproperties:
         properties = []
-        pairs = options.properties[0].split(';')
+        pairs = rawproperties.split(';')
         for pair in pairs:
             try:
                 key, value = pair.strip().split(':', 1)
