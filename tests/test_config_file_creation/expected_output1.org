@@ -1,0 +1,55 @@
+# This is a configuration file for the tool "appendorgheading".
+#
+# You can disable keys by removing its value, deleting the whole line or prepending with "# " or "; ".
+
+[DEFAULT]
+
+# output: Path to the Org mode file to append to
+# example: "~/org mode/my errors.org"
+output = output1.org
+
+# level: The heading level (number of asterisks)
+# example: "2"
+level = 2
+
+# keyword: One TODO keyword
+# example: "TODO" or "CRITICAL"
+keyword = MYTODO
+
+# priority: Priority indicator letter
+# example: "A" or "C"
+priority = C
+
+# title: Title of the heading
+# example: "This is a new heading title"
+title = This is my heading title
+
+# tags: One or more tags (if multiple: in quotes, separated by spaces)
+# example: "tag1 tag2"
+tags = tag2 tag_3
+
+# scheduled: An Org mode date- or time-stamp which gets added as SCHEDULED
+# example: "<2019-12-29 Sun>"
+scheduled = <2019-12-29 Sun 11:59>
+
+# deadline: An Org mode date- or time-stamp which gets added as DEADLINE
+# example: "<2019-12-29 Sun>"
+deadline = <2019-12-30 Mon 09:38>
+
+# properties: A string with key-value pairs. Colons separate keys from values, semicolons separate the key-value-pairs.
+# example: "key1:value1; key2 : value 2; key 3 : value 3"
+properties = CREATED:<2019-12-31 Tue 14:02>;demo:yes; example: yes ; curious: for sure
+
+# section: This is used as the section text or body of the heading
+# example: "The new heading is important\nbecause I will do this or that."
+section = This is used as the section text or body of the heading.\nThis is a second line of it.
+
+# filecontent: Path to a filename whose content gets appended to the section body within an EXAMPLE block
+# example: "~/my logs/logfile.txt"
+filecontent = input1.log
+
+# daily: Add a time-stamp for today which is recurring on a daily basis
+# example: "True" or "False"
+daily = True
+
+# End of configuration file
