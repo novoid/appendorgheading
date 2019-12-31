@@ -6,50 +6,50 @@
 
 # output: Path to the Org mode file to append to
 # example: "~/org mode/my errors.org"
-output = /home/vk/org/errors_misc.org
+output = FIXXMEoutput
 
 # level: The heading level (number of asterisks)
 # example: "2"
-level = 2
+level = 99
 
 # keyword: One TODO keyword
 # example: "TODO" or "CRITICAL"
-keyword = 
+keyword = FIXXMEkeyword
 
 # priority: Priority indicator letter
 # example: "A" or "C"
-priority = 
+priority = B
 
 # title: Title of the heading
 # example: "This is a new heading title"
-title = 
+title = FIXXMEtitle
 
 # tags: One or more tags (if multiple: in quotes, separated by spaces)
 # example: "tag1 tag2"
-tags = 
+tags = FIXXMEtag
 
 # scheduled: An Org mode date- or time-stamp which gets added as SCHEDULED
 # example: "<2019-12-29 Sun>"
-scheduled = 
+scheduled = <FIXXMEscheduled>
 
 # deadline: An Org mode date- or time-stamp which gets added as DEADLINE
 # example: "<2019-12-29 Sun>"
-deadline = 
+deadline = <FIXXMEdeadline>
 
 # properties: A string with key-value pairs. Colons separate keys from values, semicolons separate the key-value-pairs.
 # example: "key1:value1; key2 : value 2; key 3 : value 3"
-properties = 
+properties = "FIXXMEkey:FIXXMEvalue"
 
 # section: This is used as the section text or body of the heading
 # example: "The new heading is important\nbecause I will do this or that."
-section = 
+section = FIXXMEsection
 
 # filecontent: Path to a filename whose content gets appended to the section body within an EXAMPLE block
 # example: "~/my logs/logfile.txt"
-filecontent = 
+filecontent = FIXXMEfilecontent
 
 # daily: Add a time-stamp for today which is recurring on a daily basis
 # example: "True" or "False"
-daily = True
+daily = False
 
 # End of configuration file
