@@ -9,7 +9,6 @@ SCHEDULED: <2019-12-29 Sun 11:59> DEADLINE: <2019-12-30 Mon 09:38>
 :curious: for sure
 :END:
 
-<2019-12-31 Tue 14:12 +1d>
 This is used as the section text or body of the heading.
 This is a second line of it.
 
