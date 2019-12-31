@@ -1,0 +1,26 @@
+* This is the main heading   :tag1:
+
+** MYTODO [#C] This is my heading title  :tag2:tag_3:
+SCHEDULED: <2019-12-29 Sun 11:59> DEADLINE: <2019-12-30 Mon 09:38>
+:PROPERTIES:
+:CREATED: <2019-12-31 Tue 14:02>
+:demo: yes
+:example: yes
+:curious: for sure
+:END:
+
+This is used as the section text or body of the heading.
+This is a second line of it.
+
+File content of "input1.log":
+#+BEGIN_EXAMPLE
+,* this is a test
+,** this is another test
+
+  Very well testing.
+ Abother line.
+
+ * Stupid test.
+
+end of test.
+#+END_EXAMPLE

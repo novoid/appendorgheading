@@ -1,0 +1,2 @@
+This unit test is testing the good case with all possible configuration
+settings and an empty command line argument list.
