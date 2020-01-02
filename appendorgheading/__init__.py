@@ -396,8 +396,6 @@ def handle_preference_priorities(config_file_read, config):
         title = config['DEFAULT']['title']
     else:
         title = None
-    if title:
-        title = remove_leading_and_trailing_quotations(title)
 
     rawtags = None
     if options.tags:  # FIXXME: check for format before converting
