@@ -22,7 +22,7 @@ which is part of his Org mode agenda:
 When this =example_script.sh= returns an [[http://tldp.org/LDP/abs/html/exit-status.html][exit status]] which is not
 zero, =appendorgheading= is adding a new heading to the file
 =errors.org= at level 2 (two asterisks) with the title
-"example_script: some error occurred". 
+"example_script: some error occurred".
 
 Using the =--daily= parameter, there is a time-stamp attached which
 re-occurs on a daily basis. This looks similar to
@@ -34,14 +34,14 @@ If these parameters are always the same, you can use the configuration
 file (see section below) to store the default values. Using this, you
 can reduce the example call above to:
 
-: example_script.sh >out.log 2>&1 || appendorgheading 
+: example_script.sh >out.log 2>&1 || appendorgheading
 
 The =errors.org= gets a new heading that looks like:
 
 : ** TODO example_script: some error occurred
-: 
+:
 : #+BEGIN_EXAMPLE
-: <This is the content of 
+: <This is the content of
 : the file out.log.>
 : #+END_EXAMPLE
 
@@ -179,10 +179,10 @@ Additional to the example from the "Why"-section above, here are some other use-
 
 *** Checking for file age
 
-The author is generating an [[https://en.wikipedia.org/wiki/ICalendar][ical/ics-file]] via [[https://en.wikipedia.org/wiki/Cron][cron]]. If this is failing
-somehow because of Emacs tripping over some problematic Org mode data,
-this ics file gets old without noticing. Since I am using this to
-update [[https://radicale.org/][a calendar server]], this is a silent issue.
+Use-case: The author is generating an [[https://en.wikipedia.org/wiki/ICalendar][ical/ics-file]] via [[https://en.wikipedia.org/wiki/Cron][cron]]. If this
+is failing somehow because of Emacs tripping over some problematic Org
+mode data, this ics file gets old without noticing. Since I am using
+this to update [[https://radicale.org/][a calendar server]], this is a silent issue.
 
 With =appendorgheading=, I can add a check for this using the shell script =appendorgheading-if-file-too-old.sh=:
 
@@ -194,14 +194,14 @@ FILENAME="${1}"
 MAXDAYS="${2}"
 HELPTEXT="${3}"
 
-OLD=`stat -c %Y "${FILENAME}"`
-NOW=`date +%s`
+OLD=$(stat -c %Y "${FILENAME}")
+NOW=$(date +%s)
 DIFFDAYS=$(( ($NOW - $OLD) / (60*60*24) ))
 DIFFHRS=$(( ($NOW - $OLD) / (60*60) ))
 
 [ $DIFFDAYS -gt $MAXDAYS ] && /usr/local/bin/appendorgheading --title "\"${FILENAME}\" is older than $DIFFDAYS days" \
         --quiet \
-        --section "File is $DIFFHRS hours old: $(ls -la ${FILENAME})\n\n${HELPTEXT}"
+        --section "File is $DIFFHRS hours old: $(ls -la "${FILENAME}")\n\n${HELPTEXT}"
 exit 0
 #end
 #+END_SRC
@@ -209,6 +209,17 @@ exit 0
 My invocation command looks like:
 
 : appendorgheading-if-file-too-old.sh /home/vk/.emacs.d/var/export/agenda-export.ics 0 "check with id:2019-11-19-HOWTO-check-and-fix-Org-agenda-radicale"
+
+An example output in the resulting Org mode file could look like:
+
+: *** "/home/vk/.emacs.d/var/export/agenda-export.ics" is older than 3 days
+:
+: <2020-06-02 Tue 10:57 +1d>
+: File is 75 hours old: -rw-r--r-- 1 vk vk 270538328 May  28  2020 agenda-export.ics
+:
+: check with id:2019-11-19-HOWTO-check-and-fix-Org-agenda-radicale
+
+... which then finds its way to my agenda, reminding me to check this issue.
 
 ** Changelog
 
