@@ -1,0 +1,55 @@
+# This is a configuration file for the tool "appendorgheading".
+#
+# You can disable keys by removing its value, deleting the whole line or prepending with "# " or "; ".
+
+[DEFAULT]
+
+# output: Path to the Org mode file to append to
+# example: "~/org mode/my errors.org"
+output = output1.org
+
+# level: The heading level (number of asterisks)
+# example: "2"
+level = 2
+
+# keyword: One TODO keyword
+# example: "TODO" or "CRITICAL"
+keyword = 
+
+# priority: Priority indicator letter
+# example: "A" or "C"
+priority =
+
+# title: Title of the heading
+# example: "This is a new heading title"
+title =
+
+# tags: One or more tags (if multiple: in quotes, separated by spaces)
+# example: "tag1 tag2"
+tags = 
+
+# scheduled: An Org mode date- or time-stamp which gets added as SCHEDULED
+# example: "<2019-12-29 Sun>"
+scheduled = 
+
+# deadline: An Org mode date- or time-stamp which gets added as DEADLINE
+# example: "<2019-12-29 Sun>"
+deadline = 
+
+# properties: A string with key-value pairs. Colons separate keys from values, semicolons separate the key-value-pairs.
+# example: "key1:value1; key2 : value 2; key 3 : value 3"
+properties = 
+
+# section: This is used as the section text or body of the heading
+# example: "The new heading is important\nbecause I will do this or that."
+section = 
+
+# filecontent: Path to a filename whose content gets appended to the section body within an EXAMPLE block
+# example: "~/my logs/logfile.txt"
+filecontent = 
+
+# daily: Add a time-stamp for today which is recurring on a daily basis
+# example: "True" or "False"
+daily = True
+
+# End of configuration file

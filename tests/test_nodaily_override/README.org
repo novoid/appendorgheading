@@ -1,0 +1,2 @@
+This unit test is testing the good case with just a minimal set of
+settings: output file and level.
