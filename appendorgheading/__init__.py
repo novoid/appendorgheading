@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2019-12-31 15:13:09 vk>"
+PROG_VERSION = "Time-stamp: <2020-06-02 10:33:48 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -76,7 +76,7 @@ parser.add_argument("--output",
                     type=str,
                     metavar='<FILE.ORG>',
                     required=False,
-                    help="Path to the Org mode file to append to")
+                    help="Path to the Org mode file to append to.")
 
 parser.add_argument("--level",
                     dest="level",
@@ -100,7 +100,7 @@ parser.add_argument("--priority",
                     type=str,
                     metavar='"PRIO"',
                     required=False,
-                    help="Priority indicator such as \"A\" or \"C\"")
+                    help="Priority indicator such as \"A\" or \"C\".")
 
 parser.add_argument("--title",
                     dest="title",
@@ -108,7 +108,7 @@ parser.add_argument("--title",
                     type=str,
                     metavar='"HEADING TITLE"',
                     required=False,
-                    help="Title of the heading")
+                    help="Title of the heading.")
 
 parser.add_argument("--tags",
                     dest="tags",
@@ -116,7 +116,7 @@ parser.add_argument("--tags",
                     type=str,
                     metavar='"STRING WITH TAGS"',
                     required=False,
-                    help="One or more tags (if multiple: in quotes, separated by spaces)")
+                    help="One or more tags (if multiple: in quotes, separated by spaces).")
 
 parser.add_argument("--scheduled",
                     dest="scheduled",
@@ -124,7 +124,7 @@ parser.add_argument("--scheduled",
                     type=str,
                     metavar='"STRING WITH DATE/TIME-STAMP"',
                     required=False,
-                    help="An Org mode date- or time-stamp such as \"<2019-12-29 Sun>\" which is added as SCHEDULED")
+                    help="An Org mode date- or time-stamp such as \"<2019-12-29 Sun>\" which is added as SCHEDULED.")
 
 parser.add_argument("--deadline",
                     dest="deadline",
@@ -132,7 +132,7 @@ parser.add_argument("--deadline",
                     type=str,
                     metavar='"STRING WITH DATE/TIME-STAMP"',
                     required=False,
-                    help="An Org mode date- or time-stamp such as \"<2019-12-29 Sun>\" which is added as DEADLINE")
+                    help="An Org mode date- or time-stamp such as \"<2019-12-29 Sun>\" which is added as DEADLINE.")
 
 parser.add_argument("--properties",
                     dest="properties",
@@ -156,13 +156,16 @@ parser.add_argument("--filecontent",
                     type=str,
                     metavar='<FILE>',
                     required=False,
-                    help="Path to a filename whose content gets appended to the section body within an EXAMPLE block")
+                    help="Path to a filename whose content gets appended to the section body within an EXAMPLE block.")
 
 parser.add_argument("--daily", action="store_true",
-                    help="Add a time-stamp for today which is recurring on a daily basis")
+                    help="Add a time-stamp for today which is recurring on a daily basis.")
+
+parser.add_argument("--nodaily", action="store_true",
+                    help="Override setting for \"--daily\" from the configuration file.")
 
 parser.add_argument("--dryrun", dest="dryrun", action="store_true",
-                    help="Enable dryrun mode: just simulate what would happen, do not modify files")
+                    help="Enable dryrun mode: just simulate what would happen, do not modify files.")
 
 parser.add_argument("--generateconfigfile",
                     dest="generateconfigfile",
@@ -170,19 +173,19 @@ parser.add_argument("--generateconfigfile",
                     type=str,
                     metavar='<FILE>',
                     required=False,
-                    help="Path to a filename which gets created or overwritten with a configuration file that contains default values or the values given by the parameters")
+                    help="Path to a filename which gets created or overwritten with a configuration file that contains default values or the values given by the parameters.")
 
 parser.add_argument("-v", "--verbose",
                     dest="verbose", action="store_true",
-                    help="Enable verbose mode")
+                    help="Enable verbose mode.")
 
 parser.add_argument("-q", "--quiet",
                     dest="quiet", action="store_true",
-                    help="Enable quiet mode")
+                    help="Enable quiet mode.")
 
 parser.add_argument("--version",
                     dest="version", action="store_true",
-                    help="Display version and exit")
+                    help="Display version and exit.")
 
 options = parser.parse_args()
 
@@ -469,6 +472,8 @@ def handle_preference_priorities(config_file_read, config):
 
     if options.daily:
         daily = True
+    elif options.nodaily:
+        daily = False
     elif config_file_read and 'daily' in config['DEFAULT'].keys() and len(config['DEFAULT']['daily']) > 0:
         daily = config['DEFAULT'].getboolean('daily')
     else:
