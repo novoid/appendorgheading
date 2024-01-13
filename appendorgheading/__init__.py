@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2020-06-02 10:33:48 vk>"
+PROG_VERSION = "Time-stamp: <2024-01-13 18:30:24 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -13,7 +13,7 @@ PROG_VERSION = "Time-stamp: <2020-06-02 10:33:48 vk>"
 
 from importlib import import_module
 
-#def save_import(library):
+#def safe_import(library):
 #    try:
 #        globals()[library] = import_module(library)
 #    except ImportError:
@@ -28,7 +28,7 @@ import datetime
 import logging
 import configparser
 from orgformat import OrgFormat, TimestampParseException
-#save_import('orgformat')
+#safe_import('orgformat')
 
 PROG_VERSION_DATE = PROG_VERSION[13:23]
 
