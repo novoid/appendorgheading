@@ -99,79 +99,76 @@ which doesn't change any files at all and tells you what would happen.
   # ./appendorgheading/__init__.py --help | sed 'sX/home/vkX\$HOMEX'
   # #+END_SRC
 
- #+begin_src
- usage: appendorgheading [-h] [--output <FILE.ORG>]
-                         [--level <level>] [--keyword <TODO>]
-                         [--priority "PRIO"]
-                         [--title "HEADING TITLE"]
-                         [--tags "STRING WITH TAGS"]
-                         [--scheduled "STRING WITH DATE/TIME-STAMP"]
-                         [--deadline "STRING WITH DATE/TIME-STAMP"]
-                         [--properties "KEY1:VALUE1; KEY2:VALUE2"]
-                         [--section "STRING"]
-                         [--filecontent <FILE>] [--daily]
-                         [--dryrun] [--generateconfigfile <FILE>]
-                         [-v] [-q] [--version]
+#+BEGIN_EXAMPLE
+usage: appendorgheading.py [-h] [--output <FILE.ORG>] [--level <level>] [--keyword <TODO>]     
+                           [--priority "PRIO"] [--title "HEADING TITLE"]          
+                           [--tags "STRING WITH TAGS"]
+                           [--scheduled "STRING WITH DATE/TIME-STAMP"]
+                           [--deadline "STRING WITH DATE/TIME-STAMP"]                           
+                           [--properties "KEY1:VALUE1; KEY2:VALUE2"] [--section "STRING"]       
+                           [--filecontent <FILE>] [--blocktype <BLOCK_TYPE>] [--daily]          
+                           [--nodaily] [--dryrun] [--generateconfigfile <FILE>] [-v] [-q]
+                           [--version]                                                            
+                                                                                                             
+This tool appends Org mode formatted headings to existing Org mode files.                        
+                                                      
+The optional configuration file ".appendorgheading" can be placed:                                         
+1. the current directory  ... OR ...                                                                         
+2. the home directory ("~/.appendorgheading")
+Command line parameters override configuration file entries.
+                                                      
+A typical use-case for this script is logging:
+The author is using this to log events to some kind of 'errors.org' which is part
+of his Org mode agenda.                               
 
- This tool appends Org mode formatted headings to existing Org mode files.
+This will use the default settings from your configuration file and log to the
+defined Org mode file only if "example_script.sh" has an exit status not equal
+to zero. It also appends the content of the log file for further analysis.
 
- The optional configuration file ".appendorgheading" can be placed:
- 1. the current directory  ... OR ...
- 2. the home directory ("~/.appendorgheading")
- Command line parameters override configuration file entries.
+options:
+  -h, --help            show this help message and exit
+  --output <FILE.ORG>   Path to the Org mode file to append to.
+  --level <level>       The heading level (number of asterisks): 1, 2, 3, ...
+  --keyword <TODO>      TODO keyword such as "TODO", "ERROR", ...
+  --priority "PRIO"     Priority indicator such as "A" or "C".
+  --title "HEADING TITLE"
+                        Title of the heading.
+  --tags "STRING WITH TAGS"
+                        One or more tags (if multiple: in quotes, separated by spaces).
+  --scheduled "STRING WITH DATE/TIME-STAMP"
+                        An Org mode date- or time-stamp such as "<2019-12-29 Sun>" which is added as
+                        SCHEDULED.
+  --deadline "STRING WITH DATE/TIME-STAMP"
+                        An Org mode date- or time-stamp such as "<2019-12-29 Sun>" which is added as
+                        DEADLINE.
+  --properties "KEY1:VALUE1; KEY2:VALUE2"
+                        A string with key-value pairs. Colons separate keys from values, semicolons
+                        separate the key-value-pairs.
+  --section "STRING"    This is used as the section text or body of the heading.
+  --filecontent <FILE>  Path to a filename whose content gets appended to the section body within a block.
+                        If no "--blocktype" is provided, the default block type is "EXAMPLE".
+  --blocktype <BLOCK_TYPE>
+                        If "--filecontent" is given, use this type of block:
+                        "#+BEGIN_BLOCKTYPE…#+END_BLOCKTYPE". This could be one of: 'SRC', 'VERSE', 'QUOTE',
+                        'ORG', 'EXAMPLE', 'NONE', 'src', 'verse', 'quote', 'org', 'example', 'none'. 'NONE'
+                        is a special block type as the BEGIN/END lines are omitted and the raw file content
+                        will be inserted.
+  --daily               Add a time-stamp for today which is recurring on a daily basis.
+  --nodaily             Override setting for "--daily" from the configuration file.
+  --dryrun              Enable dryrun mode: just simulate what would happen, do not modify files.
+  --generateconfigfile <FILE>
+                        Path to a filename which gets created or overwritten with a configuration file that
+                        contains default values or the values given by the parameters.
+  -v, --verbose         Enable verbose mode.
+  -q, --quiet           Enable quiet mode.
+  --version             Display version and exit.
 
- A typical use-case for this script is logging:
- The author is using this to log events to some kind of 'errors.org' which is part
- of his Org mode agenda.
-
-   example_script.sh >out.log 2>&1 || appendorgheading --filecontent "out.log"
-
- This will use the default settings from your configuration file and log to the
- defined Org mode file only if "example_script.sh" has an exit status not equal
- to zero. It also appends the content of the log file for further analysis.
-
- optional arguments:
-   -h, --help            show this help message and exit
-   --output <FILE.ORG>   Path to the Org mode file to append to
-   --level <level>       The heading level (number of asterisks): 1, 2, 3, ...
-   --keyword <TODO>      TODO keyword such as "TODO", "ERROR", ...
-   --priority "PRIO"     Priority indicator such as "A" or "C"
-   --title "HEADING TITLE"
-                         Title of the heading
-   --tags "STRING WITH TAGS"
-                         One or more tags (if multiple: in quotes, separated by
-                         spaces)
-   --scheduled "STRING WITH DATE/TIME-STAMP"
-                         An Org mode date- or time-stamp such as "<2019-12-29
-                         Sun>" which is added as SCHEDULED
-   --deadline "STRING WITH DATE/TIME-STAMP"
-                         An Org mode date- or time-stamp such as "<2019-12-29
-                         Sun>" which is added as DEADLINE
-   --properties "KEY1:VALUE1; KEY2:VALUE2"
-                         A string with key-value pairs. Colons separate keys
-                         from values, semicolons separate the key-value-pairs.
-   --section "STRING"    This is used as the section text or body of the
-                         heading.
-   --filecontent <FILE>  Path to a filename whose content gets appended to the
-                         section body within an EXAMPLE block
-   --daily               Add a time-stamp that is recurring on a daily basis
-   --dryrun              Enable dryrun mode: just simulate what would happen,
-                         do not modify files
-   --generateconfigfile <FILE>
-                         Path to a filename which gets created or overwritten
-                         with a configuration file that contains default values
-                         or the values given by the parameters
-   -v, --verbose         Enable verbose mode
-   -q, --quiet           Enable quiet mode
-   --version             Display version and exit
-
- :copyright: (c) by Karl Voit <tools@Karl-Voit.at>
- :license: GPL v3 or any later version
- :URL: https://github.com/novoid/appendorgheading
- :bugreports: via github or <tools@Karl-Voit.at>
- :version: 2019-12-30
- ·
- #+end_src
+:copyright: (c) by Karl Voit <tools@Karl-Voit.at>
+:license: GPL v3 or any later version
+:URL: https://github.com/novoid/appendorgheading
+:bugreports: via github or <tools@Karl-Voit.at>
+:version: 2025-02-06
+#+END_EXAMPLE
 
 ** Examples
 
@@ -225,6 +222,7 @@ An example output in the resulting Org mode file could look like:
 
 - 2019.12.30.1: first version
 - 2020.06.02.1: added command line option for =--nodaily= to override configuration file preference
+- 2025.02.06.1: added =--blocktype= option
 
 * How to Thank Me
 

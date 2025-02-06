@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2024-01-13 18:30:24 vk>"
+PROG_VERSION = "Time-stamp: <2025-02-06 15:58:29 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -156,7 +156,16 @@ parser.add_argument("--filecontent",
                     type=str,
                     metavar='<FILE>',
                     required=False,
-                    help="Path to a filename whose content gets appended to the section body within an EXAMPLE block.")
+                    help="Path to a filename whose content gets appended to the section body within a block. If no \"--blocktype\" is provided, the default block type is \"EXAMPLE\".")
+
+parser.add_argument("--blocktype",
+                    dest="blocktype",
+                    nargs=1,
+                    type=str,
+                    choices=['SRC', 'VERSE', 'QUOTE', 'ORG', 'EXAMPLE', 'NONE', 'src', 'verse', 'quote', 'org', 'example', 'none'],
+                    metavar='<BLOCK_TYPE>',
+                    required=False,
+                    help="If \"--filecontent\" is given, use this type of block: \"#+BEGIN_BLOCKTYPE…#+END_BLOCKTYPE\". This could be one of: 'SRC', 'VERSE', 'QUOTE', 'ORG', 'EXAMPLE', 'NONE', 'src', 'verse', 'quote', 'org', 'example', 'none'. 'NONE' is a special block type as the BEGIN/END lines are omitted and the raw file content will be inserted.")
 
 parser.add_argument("--daily", action="store_true",
                     help="Add a time-stamp for today which is recurring on a daily basis.")
@@ -301,6 +310,12 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
     result += 'filecontent = '
     if filecontent:
         result += filecontent
+
+    result += '\n\n# blocktype: If "--filecontent" is used, its content is put into an EXAMPLE block. If you want to use a different block type, use one of: "SRC", "VERSE", "QUOTE", "ORG", "NONE", "src", "verse", "quote", "org", "none"\n'
+    result += '# example: "VERSE"\n'
+    result += 'blocktype = '
+    if blocktype:
+        result += blocktype
 
     result += '\n\n# daily: Add a time-stamp for today which is recurring on a daily basis\n'
     result += '# example: "True" or "False"\n'
@@ -463,6 +478,11 @@ def handle_preference_priorities(config_file_read, config):
     else:
         filecontent = None
 
+    if options.blocktype:
+        blocktype = options.blocktype[0]
+    elif config_file_read and 'blocktype' in config['DEFAULT'].keys() and len(config['DEFAULT']['blocktype']) > 0:
+        blocktype = config['DEFAULT']['blocktype']
+        
     if options.generateconfigfile:
         generateconfigfile = options.generateconfigfile[0]
     elif config_file_read and 'generateconfigfile' in config['DEFAULT'].keys() and len(config['DEFAULT']['generateconfigfile']) > 0:
@@ -480,7 +500,7 @@ def handle_preference_priorities(config_file_read, config):
         daily = False
 
     return scheduled, rawtags, keyword, tags, section, generateconfigfile, rawproperties, \
-        daily, priority, deadline, filecontent, output, title, level, properties
+        daily, priority, deadline, filecontent, blocktype, output, title, level, properties
 
 
 def is_int(string):
@@ -498,7 +518,7 @@ def is_int(string):
 
 
 def check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline,
-                    rawproperties, properties, section, filecontent):
+                    rawproperties, properties, section, filecontent, blocktype):
 
     if output:
         assert isinstance(output, str)
@@ -583,7 +603,10 @@ def check_arguments(output, level, keyword, priority, title, rawtags, tags, sche
         if not os.path.isfile(filecontent):
             error_exit(100, 'Filecontent parameter "' + str(filecontent) + '" does not point to an existing file.')
 
-
+    if blocktype:
+        if not filecontent:
+            error_exit(110, 'The parameter "--blocktype" does not make any sense when not used with "--filecontent".')
+            
 def generate_heading_wrapper(level, keyword, priority, title, tags, scheduled, deadline, properties, section):
 
     return OrgFormat.generate_heading(level=level,
@@ -612,7 +635,7 @@ def main():
         logging.debug('No config found.')
 
     scheduled, rawtags, keyword, tags, section, generateconfigfile, rawproperties, \
-        daily, priority, deadline, filecontent, output, title, level, properties = \
+        daily, priority, deadline, filecontent, blocktype, output, title, level, properties = \
             handle_preference_priorities(config_file_read, config)
 
     # output, level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties, properties, section, filecontent, daily
@@ -625,7 +648,7 @@ def main():
         logging.debug('Variable ' + str(pair[0]) + ': [' + str(pair[1]) + ']')
 
     check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline,
-                    rawproperties, properties, section, filecontent)
+                    rawproperties, properties, section, filecontent, blocktype)
 
     if generateconfigfile:
         config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
@@ -654,15 +677,35 @@ def main():
             body += section.strip().replace('\\n', '\n') + '\n'
         if filecontent:
             body += '\nFile content of "' + filecontent + '":\n'
-            body += '#+BEGIN_EXAMPLE\n'
+            selected_block_type = ''
+            if not options.blocktype or options.blocktype[0].upper() == 'EXAMPLE':
+                selected_block_type = 'EXAMPLE'
+            elif options.blocktype[0].upper() == 'SRC':
+                selected_block_type = 'SRC'
+            elif options.blocktype[0].upper() == 'VERSE':
+                selected_block_type = 'VERSE'
+            elif options.blocktype[0].upper() == 'QUOTE':
+                selected_block_type = 'QUOTE'
+            elif options.blocktype[0].upper() == 'ORG':
+                selected_block_type = 'ORG'
+                
+            if options.blocktype[0].upper() == 'NONE':
+                body += '\n'
+            else:
+                body += '#+BEGIN_' + selected_block_type + '\n'
+                
             import codecs
             with codecs.open(filecontent, 'r', encoding='utf-8') as input:
                 for rawline in input:
                     line = rawline.rstrip()
-                    if line.startswith('*') or line.upper().startswith('#+BEGIN_EXAMPLE') or line.upper().startswith('#+END_EXAMPLE'):
+                    if line.startswith('*') or line.upper().startswith('#+BEGIN_') or line.upper().startswith('#+END_'):
                         body += ','
                     body += line + '\n'
-            body += '#+END_EXAMPLE\n'
+
+            if options.blocktype[0].upper() == 'NONE':
+                body += '\n'
+            else:
+                body += '#+END_' + selected_block_type + '\n'
 
         content = generate_heading_wrapper(int(level), keyword, priority, title, tags, scheduled, deadline,
                                            properties, body)
