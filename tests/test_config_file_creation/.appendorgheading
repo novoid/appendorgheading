@@ -47,6 +47,7 @@ section = FIXXMEsection
 # filecontent: Path to a filename whose content gets appended to the section body within an EXAMPLE block
 # example: "~/my logs/logfile.txt"
 filecontent = FIXXMEfilecontent
+blocktype = EXAMPLE
 
 # daily: Add a time-stamp for today which is recurring on a daily basis
 # example: "True" or "False"

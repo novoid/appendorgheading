@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2025-02-06 15:58:29 vk>"
+PROG_VERSION = "Time-stamp: <2025-02-06 16:25:28 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -237,7 +237,7 @@ def successful_exit():
 
 def generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
                                         scheduled, deadline, rawproperties, section,
-                                        filecontent, daily):
+                                        filecontent, blocktype, daily):
     """
     Create or overwrite a configuration file with the given options.
     """
@@ -478,6 +478,7 @@ def handle_preference_priorities(config_file_read, config):
     else:
         filecontent = None
 
+    blocktype = None
     if options.blocktype:
         blocktype = options.blocktype[0]
     elif config_file_read and 'blocktype' in config['DEFAULT'].keys() and len(config['DEFAULT']['blocktype']) > 0:
@@ -653,7 +654,7 @@ def main():
     if generateconfigfile:
         config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
                                                                   scheduled, deadline, rawproperties, section,
-                                                                  filecontent, daily)
+                                                                  filecontent, blocktype, daily)
         if options.dryrun:
             logging.info('I would write the file "%s" with following content:' % generateconfigfile)
             print('-' * 80)
@@ -680,16 +681,16 @@ def main():
             selected_block_type = ''
             if not options.blocktype or options.blocktype[0].upper() == 'EXAMPLE':
                 selected_block_type = 'EXAMPLE'
-            elif options.blocktype[0].upper() == 'SRC':
+            elif options.blocktype and options.blocktype[0].upper() == 'SRC':
                 selected_block_type = 'SRC'
-            elif options.blocktype[0].upper() == 'VERSE':
+            elif options.blocktype and options.blocktype[0].upper() == 'VERSE':
                 selected_block_type = 'VERSE'
-            elif options.blocktype[0].upper() == 'QUOTE':
+            elif options.blocktype and options.blocktype[0].upper() == 'QUOTE':
                 selected_block_type = 'QUOTE'
-            elif options.blocktype[0].upper() == 'ORG':
+            elif options.blocktype and options.blocktype[0].upper() == 'ORG':
                 selected_block_type = 'ORG'
                 
-            if options.blocktype[0].upper() == 'NONE':
+            if options.blocktype and options.blocktype[0].upper() == 'NONE':
                 body += '\n'
             else:
                 body += '#+BEGIN_' + selected_block_type + '\n'
@@ -702,7 +703,7 @@ def main():
                         body += ','
                     body += line + '\n'
 
-            if options.blocktype[0].upper() == 'NONE':
+            if options.blocktype and options.blocktype[0].upper() == 'NONE':
                 body += '\n'
             else:
                 body += '#+END_' + selected_block_type + '\n'

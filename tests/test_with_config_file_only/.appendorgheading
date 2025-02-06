@@ -22,7 +22,7 @@ priority = C
 
 # title: Title of the heading
 # example: "This is a new heading title"
-title = "This is my heading title"
+title = This is my heading title
 
 # tags: One or more tags (if multiple: in quotes, separated by spaces)
 # example: "tag1 tag2"

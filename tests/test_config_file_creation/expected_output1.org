@@ -48,6 +48,10 @@ section = This is used as the section text or body of the heading.\nThis is a se
 # example: "~/my logs/logfile.txt"
 filecontent = input1.log
 
+# blocktype: If "--filecontent" is used, its content is put into an EXAMPLE block. If you want to use a different block type, use one of: "SRC", "VERSE", "QUOTE", "ORG", "NONE", "src", "verse", "quote", "org", "none"
+# example: "VERSE"
+blocktype = EXAMPLE
+
 # daily: Add a time-stamp for today which is recurring on a daily basis
 # example: "True" or "False"
 daily = True
