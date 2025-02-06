@@ -8,7 +8,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name="appendorgheading",
-    version="2025.02.06.1",
+    version="2025.02.06.2",
     description="Append a new Org mode heading to an existing Org mode file",
     author="Karl Voit",
     author_email="tools@Karl-Voit.at",

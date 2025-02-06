@@ -17,7 +17,8 @@ echo "* This is the main heading   :tag1:" > "${output}"
   --properties "CREATED:<2019-12-31 Tue 14:02>;demo:yes; example: yes ; curious: for sure" \
   --section "This is used as the section text or body of the heading.\nThis is a second line of it." \
   --filecontent input1.log \
-  --blocktype EXAMPLE
+  --blocktype EXAMPLE \
+  --nosanitize
 
  # end
 

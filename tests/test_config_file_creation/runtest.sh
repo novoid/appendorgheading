@@ -14,6 +14,7 @@
   --section "This is used as the section text or body of the heading.\nThis is a second line of it." \
   --filecontent input1.log \
   --blocktype EXAMPLE \
+  --nosanitize \
   --daily \
   --quiet
 

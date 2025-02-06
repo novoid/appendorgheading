@@ -52,6 +52,10 @@ filecontent = input1.log
 # example: "VERSE"
 blocktype = EXAMPLE
 
+# nosanitize: If "--filecontent" is given, things like "*" or "#+BEGIN_" lines are not prepend by ",". This is especially handy when using "--filecontent NONE"
+# example: "True" or "False"
+nosanitize = True
+
 # daily: Add a time-stamp for today which is recurring on a daily basis
 # example: "True" or "False"
 daily = True

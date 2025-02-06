@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = "Time-stamp: <2025-02-06 16:25:28 vk>"
+PROG_VERSION = "Time-stamp: <2025-02-06 19:31:53 vk>"
 
 # TODO:
 # - fix parts marked with «FIXXME»
@@ -167,6 +167,9 @@ parser.add_argument("--blocktype",
                     required=False,
                     help="If \"--filecontent\" is given, use this type of block: \"#+BEGIN_BLOCKTYPE…#+END_BLOCKTYPE\". This could be one of: 'SRC', 'VERSE', 'QUOTE', 'ORG', 'EXAMPLE', 'NONE', 'src', 'verse', 'quote', 'org', 'example', 'none'. 'NONE' is a special block type as the BEGIN/END lines are omitted and the raw file content will be inserted.")
 
+parser.add_argument("--nosanitize", action="store_true",
+                    help="If \"--filecontent\" is given, things like \"*\" or \"#+BEGIN_\" lines are not prepend by \",\". This is especially handy when using \"--filecontent NONE\".")
+
 parser.add_argument("--daily", action="store_true",
                     help="Add a time-stamp for today which is recurring on a daily basis.")
 
@@ -237,7 +240,7 @@ def successful_exit():
 
 def generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
                                         scheduled, deadline, rawproperties, section,
-                                        filecontent, blocktype, daily):
+                                        filecontent, blocktype, nosanitize, daily):
     """
     Create or overwrite a configuration file with the given options.
     """
@@ -316,6 +319,14 @@ def generate_configuration_file_content(output, level, keyword, priority, title,
     result += 'blocktype = '
     if blocktype:
         result += blocktype
+
+    result += '\n\n# nosanitize: If "--filecontent" is given, things like "*" or "#+BEGIN_" lines are not prepend by ",". This is especially handy when using "--filecontent NONE"\n'
+    result += '# example: "True" or "False"\n'
+    result += 'nosanitize = '
+    if nosanitize:
+        result += "True"
+    else:
+        result += 'False'
 
     result += '\n\n# daily: Add a time-stamp for today which is recurring on a daily basis\n'
     result += '# example: "True" or "False"\n'
@@ -484,6 +495,15 @@ def handle_preference_priorities(config_file_read, config):
     elif config_file_read and 'blocktype' in config['DEFAULT'].keys() and len(config['DEFAULT']['blocktype']) > 0:
         blocktype = config['DEFAULT']['blocktype']
         
+    if options.nosanitize:
+        nosanitize = True
+    elif not options.nosanitize:
+        nosanitize = False
+    elif config_file_read and 'nosanitize' in config['DEFAULT'].keys() and len(config['DEFAULT']['nosanitize']) > 0:
+        nosanitize = config['DEFAULT'].getboolean('nosanitize')
+    else:
+        nosanitize = False
+        
     if options.generateconfigfile:
         generateconfigfile = options.generateconfigfile[0]
     elif config_file_read and 'generateconfigfile' in config['DEFAULT'].keys() and len(config['DEFAULT']['generateconfigfile']) > 0:
@@ -501,7 +521,7 @@ def handle_preference_priorities(config_file_read, config):
         daily = False
 
     return scheduled, rawtags, keyword, tags, section, generateconfigfile, rawproperties, \
-        daily, priority, deadline, filecontent, blocktype, output, title, level, properties
+        daily, priority, deadline, filecontent, blocktype, nosanitize, output, title, level, properties
 
 
 def is_int(string):
@@ -519,7 +539,7 @@ def is_int(string):
 
 
 def check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline,
-                    rawproperties, properties, section, filecontent, blocktype):
+                    rawproperties, properties, section, filecontent, blocktype, nosanitize):
 
     if output:
         assert isinstance(output, str)
@@ -608,6 +628,10 @@ def check_arguments(output, level, keyword, priority, title, rawtags, tags, sche
         if not filecontent:
             error_exit(110, 'The parameter "--blocktype" does not make any sense when not used with "--filecontent".')
             
+    if nosanitize:
+        if not filecontent:
+            error_exit(120, 'The parameter "--nosanitize" does not make any sense when not used with "--filecontent".')
+            
 def generate_heading_wrapper(level, keyword, priority, title, tags, scheduled, deadline, properties, section):
 
     return OrgFormat.generate_heading(level=level,
@@ -636,25 +660,27 @@ def main():
         logging.debug('No config found.')
 
     scheduled, rawtags, keyword, tags, section, generateconfigfile, rawproperties, \
-        daily, priority, deadline, filecontent, blocktype, output, title, level, properties = \
+        daily, priority, deadline, filecontent, blocktype, nosanitize, output, title, level, properties = \
             handle_preference_priorities(config_file_read, config)
 
-    # output, level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties, properties, section, filecontent, daily
+    # output, level, keyword, priority, title, rawtags, tags, scheduled, deadline, rawproperties,
+    # properties, section, filecontent, blocktype, nosanitize, daily
     for pair in [('output', output), ('level', level), ('keyword', keyword), ('priority', priority),
                  ('title', title), ('rawtags', rawtags), ('tags', tags),
                  ('scheduled', scheduled), ('deadline', deadline),
                  ('rawproperties', rawproperties), ('properties', properties),
                  ('section', section), ('filecontent', filecontent),
+                 ('blocktype', blocktype), ('nosanitize', nosanitize),
                  ('daily', daily)]:
         logging.debug('Variable ' + str(pair[0]) + ': [' + str(pair[1]) + ']')
 
     check_arguments(output, level, keyword, priority, title, rawtags, tags, scheduled, deadline,
-                    rawproperties, properties, section, filecontent, blocktype)
+                    rawproperties, properties, section, filecontent, blocktype, nosanitize)
 
     if generateconfigfile:
         config_file_content = generate_configuration_file_content(output, level, keyword, priority, title, rawtags,
                                                                   scheduled, deadline, rawproperties, section,
-                                                                  filecontent, blocktype, daily)
+                                                                  filecontent, blocktype, nosanitize, daily)
         if options.dryrun:
             logging.info('I would write the file "%s" with following content:' % generateconfigfile)
             print('-' * 80)
@@ -699,7 +725,7 @@ def main():
             with codecs.open(filecontent, 'r', encoding='utf-8') as input:
                 for rawline in input:
                     line = rawline.rstrip()
-                    if line.startswith('*') or line.upper().startswith('#+BEGIN_') or line.upper().startswith('#+END_'):
+                    if not options.nosanitize and (line.startswith('*') or line.upper().startswith('#+BEGIN_') or line.upper().startswith('#+END_')):
                         body += ','
                     body += line + '\n'
 

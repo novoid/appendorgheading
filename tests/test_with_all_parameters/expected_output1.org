@@ -14,8 +14,8 @@ This is a second line of it.
 
 File content of "input1.log":
 #+BEGIN_EXAMPLE
-,* this is a test
-,** this is another test
+* this is a test
+** this is another test
 
   Very well testing.
  Abother line.
