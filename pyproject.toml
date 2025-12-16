@@ -1,0 +1,45 @@
+[project]
+name = "appendorgheading"
+version = "2025.12.16.1"
+description = "Append a new Org mode heading to an existing Org mode file"
+#readme = "README.org"
+
+keywords= ["orgmode", "orgdown", "CLI", "logging", "shell"]
+authors = [{name="Karl Voit", email="tools@Karl-Voit.at"}]
+license = {file = "LICENSE.txt"}
+
+
+readme = {text = """
+Read https://github.com/novoid/appendorgheading/blob/master/README.org
+""", content-type = "text/plain"}
+
+requires-python = ">=3.13"
+dependencies = [
+    "orgformat>=2025.12.13.1",
+]
+
+# sequence along https://pypi.org/classifiers
+classifiers=[
+  "Programming Language :: Python :: 3 :: Only",
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: GNU General Public License (GPL)",
+  "Operating System :: OS Independent",
+]
+
+[project.scripts]
+appendorgheading = "appendorgheading:main"
+
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0",
+]
+
+#[tool.pytest.ini_options]
+#testpaths = ["lib/tests", "tests"]
+#python_files = ["*_test.py"]
+#pythonpath = [".", "lib"]
+#addopts = "--import-mode=importlib"
+
