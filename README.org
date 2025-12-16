@@ -227,6 +227,15 @@ An example output in the resulting Org mode file could look like:
 - 2025.02.06.1: added =--blocktype= option
 - 2025.02.06.2: added =--nosanitize= option
 
+** Similar Projects
+:PROPERTIES:
+:CREATED:  [2025-11-04 Tue 18:42]
+:END:
+
+- <2025-11-04 Tue> [[https://flandrew.srht.site/listful/sw-bash-append2org.html][Append2Org]] (bash script)
+  - Source: https://sr.ht/~flandrew/append2org
+  - License: This project follows the [[https://reuse.software/][REUSE]] [[https://reuse.software/spec][Specification]] ([[https://reuse.software/faq][FAQ]]), which in turn is built upon [[https://spdx.org][SPDX]].
+
 * How to Thank Me
 
 I'm glad you like my tools. If you want to support me:
