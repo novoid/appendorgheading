@@ -1,17 +1,16 @@
 [project]
 name = "appendorgheading"
-version = "2025.12.16.1"
+version = "2026.03.01.1"
 description = "Append a new Org mode heading to an existing Org mode file"
+readme = { file = "README.org", content-type = "text/plain" }
 #readme = "README.org"
+#readme = {text = """
+#Read https://github.com/novoid/appendorgheading/blob/master/README.org
+#""", content-type = "text/plain"}
 
 keywords= ["orgmode", "orgdown", "CLI", "logging", "shell"]
 authors = [{name="Karl Voit", email="tools@Karl-Voit.at"}]
 license = {file = "LICENSE.txt"}
-
-
-readme = {text = """
-Read https://github.com/novoid/appendorgheading/blob/master/README.org
-""", content-type = "text/plain"}
 
 requires-python = ">=3.13"
 dependencies = [
@@ -24,12 +23,8 @@ classifiers=[
   "Development Status :: 5 - Production/Stable",
   "Environment :: Console",
   "Intended Audience :: End Users/Desktop",
-  "License :: OSI Approved :: GNU General Public License (GPL)",
   "Operating System :: OS Independent",
 ]
-
-[project.scripts]
-appendorgheading = "appendorgheading:main"
 
 
 [dependency-groups]
@@ -43,3 +38,26 @@ dev = [
 #pythonpath = [".", "lib"]
 #addopts = "--import-mode=importlib"
 
+
+[project.urls]
+Homepage = "https://github.com/novoid/appendorgheading"
+
+[project.scripts]
+guessfilename = "appendorgheading:main"
+
+[[tool.uv.index]]
+name = "appendorgheading"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
+
+[tool.setuptools.packages.find]
+include = ["appendorgheading*"]
+
+[build-system]
+requires = ["setuptools>=78.1.0", "wheel>=0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
