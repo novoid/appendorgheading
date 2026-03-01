@@ -1,0 +1,2 @@
+This unit test is testing the good case with all possible command 
+line arguments that override the configuration file.
