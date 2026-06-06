@@ -59,6 +59,10 @@ way. Or you can install it using the source code, e.g., by cloning the
 
 Install via [[https://pip.pypa.io/en/stable/][pip]]: ~pip install appendorgheading~
 
+# --- BEGIN SHARED: 0dependencies --- see https://github.com/novoid/screencasts/
+[[https://0dependencies.dev][https://0dependencies.dev/0dependencies.svg]] → [[https://0dependencies.dev/][learn more about 0dependencies]]
+# --- END SHARED: 0dependencies --- see https://github.com/novoid/screencasts/  
+
 ** First Steps
 
 After installing, I'd recommend you to read the help screen
